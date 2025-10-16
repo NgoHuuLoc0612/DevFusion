@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DevFusion</title>
+    
+    <!-- CSS Libraries -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/codemirror.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/theme/monokai.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/addon/merge/merge.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jsoneditor/9.10.0/jsoneditor.min.css">
+    
+    <!-- Custom Styles -->
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="stylesheet" href="styles/terminal.css">
+    <link rel="stylesheet" href="styles/components.css">
+</head>
+<body>
+    <!-- Main Navigation -->
+    <nav class="main-nav">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <i class="fas fa-code-branch"></i>
+                <span>DevFusion</span>
+                <span class="version">v2.1.0</span>
+            </div>
+            <div class="nav-links">
+                <button class="nav-link active" data-tool="diff-viewer">
+                    <i class="fas fa-not-equal"></i> Diff Viewer
+                </button>
+                <button class="nav-link" data-tool="json-tools">
+                    <i class="fas fa-brackets-curly"></i> JSON Tools
+                </button>
+                <button class="nav-link" data-tool="regex-tester">
+                    <i class="fas fa-regular-expression"></i> Regex Tester
+                </button>
+                <button class="nav-link" data-tool="string-utils">
+                    <i class="fas fa-text"></i> String Utils
+                </button>
+                <button class="nav-link" data-tool="text-analyzer">
+                    <i class="fas fa-chart-line"></i> Text Analyzer
+                </button>
+                <button class="nav-link" data-tool="file-comparator">
+                    <i class="fas fa-file-code"></i> File Compare
+                </button>
+                <button class="nav-link" data-tool="color-picker">
+                    <i class="fas fa-palette"></i> Color Picker
+                </button>
+                <button class="nav-link" data-tool="uuid-generator">
+                    <i class="fas fa-fingerprint"></i> UUID Gen
+                </button>
+                <button class="nav-link" data-tool="timestamp-converter">
+                    <i class="fas fa-clock"></i> Timestamp
+                </button>
+                <button class="nav-link" data-tool="jwt-decoder">
+                    <i class="fas fa-key"></i> JWT Decoder
+                </button>
+            </div>
+            <div class="nav-actions">
+                <button class="theme-toggle" id="themeToggle" title="Toggle Theme">
+                    <i class="fas fa-moon"></i>
+                </button>
+                <button class="terminal-toggle" id="terminalToggle" title="Terminal (Ctrl+~)">
+                    <i class="fas fa-terminal"></i>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content Area -->
+    <main class="main-content">
+        <!-- Diff Viewer Tool -->
+        <div class="tool-container active" id="diff-viewer">
+            <div class="tool-header">
+                <h2><i class="fas fa-not-equal"></i> Advanced Diff Viewer</h2>
+                <div class="tool-actions">
+                    <button class="btn-secondary" id="diffClear">
+                        <i class="fas fa-eraser"></i> Clear
+                    </button>
+                    <button class="btn-primary" id="diffCompare">
+                        <i class="fas fa-compress-arrows-alt"></i> Compare
+                    </button>
+                </div>
+            </div>
+            <div class="diff-options">
+                <label class="checkbox-label">
+                    <input type="checkbox" id="diffIgnoreWhitespace">
+                    <span>Ignore Whitespace</span>
+                </label>
+                <label class="checkbox-label">
+                    <input type="checkbox" id="diffIgnoreCase">
+                    <span>Ignore Case</span>
+                </label>
+                <label class="radio-group">
+                    <span>Mode:</span>
+                    <label><input type="radio" name="diffMode" value="line" checked> Line-by-line</label>
+                    <label><input type="radio" name="diffMode" value="word"> Word-by-word</label>
+                    <label><input type="radio" name="diffMode" value="char"> Character</label>
+                </label>
+            </div>
+            <div class="diff-container">
+                <div class="diff-panel">
+                    <div class="panel-header">
+                        <span>Original</span>
+                        <button class="btn-icon" id="uploadOriginal" title="Upload File">
+                            <i class="fas fa-upload"></i>
+                        </button>
+                    </div>
+                    <textarea id="diffOriginal" placeholder="Paste or upload original content..."></textarea>
+                </div>
+                <div class="diff-panel">
+                    <div class="panel-header">
+                        <span>Modified</span>
+                        <button class="btn-icon" id="uploadModified" title="Upload File">
+                            <i class="fas fa-upload"></i>
+                        </button>
+                    </div>
+                    <textarea id="diffModified" placeholder="Paste or upload modified content..."></textarea>
+                </div>
+            </div>
+            <div class="diff-result" id="diffResult"></div>
+            <div class="diff-stats" id="diffStats"></div>
+        </div>
+
+        <!-- JSON Tools -->
+        <div class="tool-container" id="json-tools">
+            <div class="tool-header">
+                <h2><i class="fas fa-brackets-curly"></i> JSON Beautifier & Comparator</h2>
+                <div class="tool-actions">
+                    <button class="btn-secondary" id="jsonFormat">
+                        <i class="fas fa-indent"></i> Format
+                    </button>
+                    <button class="btn-secondary" id="jsonMinify">
+                        <i class="fas fa-compress"></i> Minify
+                    </button>
+                    <button class="btn-primary" id="jsonCompare">
+                        <i class="fas fa-code-compare"></i> Compare
+                    </button>
+                </div>
+            </div>
+            <div class="json-mode-toggle">
+                <button class="mode-btn active" data-mode="single">Single JSON</button>
+                <button class="mode-btn" data-mode="compare">Compare JSONs</button>
+                <button class="mode-btn" data-mode="tree">Tree View</button>
+            </div>
+            <div class="json-workspace" id="jsonSingleMode">
+                <div id="jsonEditor" class="json-editor-container"></div>
+            </div>
+            <div class="json-workspace hidden" id="jsonCompareMode">
+                <div class="json-compare-container">
+                    <div class="json-panel">
+                        <div class="panel-header">JSON A</div>
+                        <textarea id="jsonA" placeholder='{"key": "value"}'></textarea>
+                    </div>
+                    <div class="json-panel">
+                        <div class="panel-header">JSON B</div>
+                        <textarea id="jsonB" placeholder='{"key": "value"}'></textarea>
+                    </div>
+                </div>
+                <div class="json-diff-result" id="jsonDiffResult"></div>
+            </div>
+            <div class="json-workspace hidden" id="jsonTreeMode">
+                <div id="jsonTreeEditor"></div>
+            </div>
+        </div>
+
+        <!-- Regex Tester -->
+        <div class="tool-container" id="regex-tester">
+            <div class="tool-header">
+                <h2><i class="fas fa-regular-expression"></i> Advanced Regex Tester</h2>
+            </div>
+            <div class="regex-input-section">
+                <div class="input-group">
+                    <label>Regular Expression</label>
+                    <div class="regex-input-wrapper">
+                        <input type="text" id="regexPattern" placeholder="Enter regex pattern..." value="^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$">
+                        <div class="regex-flags">
+                            <label class="flag-label" title="Global">
+                                <input type="checkbox" value="g" checked> g
+                            </label>
+                            <label class="flag-label" title="Multiline">
+                                <input type="checkbox" value="m"> m
+                            </label>
+                            <label class="flag-label" title="Case Insensitive">
+                                <input type="checkbox" value="i"> i
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <div class="regex-presets">
+                    <span>Quick Presets:</span>
+                    <button class="preset-btn" data-pattern="^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$" data-desc="Email">Email</button>
+                    <button class="preset-btn" data-pattern="^(\+\d{1,3}[- ]?)?\d{10}$" data-desc="Phone">Phone</button>
+                    <button class="preset-btn" data-pattern="https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)" data-desc="URL">URL</button>
+                    <button class="preset-btn" data-pattern="^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$" data-desc="IPv4">IPv4</button>
+                    <button class="preset-btn" data-pattern="^[0-9a-fA-F]{6}$" data-desc="Hex Color">Hex Color</button>
+                    <button class="preset-btn" data-pattern="^\d{4}-\d{2}-\d{2}$" data-desc="Date">Date (YYYY-MM-DD)</button>
+                </div>
+            </div>
+            <div class="input-group">
+                <label>Test String</label>
+                <textarea id="regexTestString" rows="8" placeholder="Enter test string here...
+user@example.com
+admin@test.org
+invalid.email@
+support@company.com"></textarea>
+            </div>
+            <div class="regex-results" id="regexResults">
+                <div class="results-header">
+                    <h3>Match Results</h3>
+                    <div class="match-count" id="matchCount">0 matches</div>
+                </div>
+                <div class="matches-container" id="matchesContainer"></div>
+            </div>
+        </div>
+
+        <!-- String & Hash Utility -->
+        <div class="tool-container" id="string-utils">
+            <div class="tool-header">
+                <h2><i class="fas fa-text"></i> String & Hash Utility</h2>
+            </div>
+            <div class="utility-tabs">
+                <button class="tab-btn active" data-tab="encode">Encode/Decode</button>
+                <button class="tab-btn" data-tab="hash">Hash Generator</button>
+                <button class="tab-btn" data-tab="transform">Transform</button>
+            </div>
+            
+            <!-- Encode/Decode Tab -->
+            <div class="tab-content active" id="encode-tab">
+                <div class="input-group">
+                    <label>Input String</label>
+                    <textarea id="encodeInput" rows="6" placeholder="Enter string to encode/decode..."></textarea>
+                </div>
+                <div class="button-grid">
+                    <button class="util-btn" data-action="base64-encode">
+                        <i class="fas fa-arrow-right"></i> Base64 Encode
+                    </button>
+                    <button class="util-btn" data-action="base64-decode">
+                        <i class="fas fa-arrow-left"></i> Base64 Decode
+                    </button>
+                    <button class="util-btn" data-action="url-encode">
+                        <i class="fas fa-link"></i> URL Encode
+                    </button>
+                    <button class="util-btn" data-action="url-decode">
+                        <i class="fas fa-unlink"></i> URL Decode
+                    </button>
+                    <button class="util-btn" data-action="html-encode">
+                        <i class="fas fa-code"></i> HTML Entities Encode
+                    </button>
+                    <button class="util-btn" data-action="html-decode">
+                        <i class="fas fa-file-code"></i> HTML Entities Decode
+                    </button>
+                </div>
+                <div class="output-section">
+                    <div class="output-header">
+                        <label>Output</label>
+                        <button class="btn-icon" id="copyEncodeOutput">
+                            <i class="fas fa-copy"></i> Copy
+                        </button>
+                    </div>
+                    <textarea id="encodeOutput" rows="6" readonly></textarea>
+                </div>
+            </div>
+            
+            <!-- Hash Tab -->
+            <div class="tab-content" id="hash-tab">
+                <div class="input-group">
+                    <label>Input String</label>
+                    <textarea id="hashInput" rows="6" placeholder="Enter string to hash..."></textarea>
+                    <button class="btn-primary" id="generateHashes" style="margin-top: 10px;">
+                        <i class="fas fa-hashtag"></i> Generate All Hashes
+                    </button>
+                </div>
+                <div class="hash-results">
+                    <div class="hash-item">
+                        <label>MD5</label>
+                        <div class="hash-output-wrapper">
+                            <input type="text" id="md5Output" readonly>
+                            <button class="btn-icon" data-copy="md5Output">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="hash-item">
+                        <label>SHA-1</label>
+                        <div class="hash-output-wrapper">
+                            <input type="text" id="sha1Output" readonly>
+                            <button class="btn-icon" data-copy="sha1Output">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="hash-item">
+                        <label>SHA-256</label>
+                        <div class="hash-output-wrapper">
+                            <input type="text" id="sha256Output" readonly>
+                            <button class="btn-icon" data-copy="sha256Output">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="hash-item">
+                        <label>SHA-512</label>
+                        <div class="hash-output-wrapper">
+                            <input type="text" id="sha512Output" readonly>
+                            <button class="btn-icon" data-copy="sha512Output">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Transform Tab -->
+            <div class="tab-content" id="transform-tab">
+                <div class="input-group">
+                    <label>Input String</label>
+                    <textarea id="transformInput" rows="6" placeholder="Enter string to transform..."></textarea>
+                </div>
+                <div class="button-grid">
+                    <button class="util-btn" data-action="uppercase">
+                        <i class="fas fa-arrow-up"></i> UPPERCASE
+                    </button>
+                    <button class="util-btn" data-action="lowercase">
+                        <i class="fas fa-arrow-down"></i> lowercase
+                    </button>
+                    <button class="util-btn" data-action="capitalize">
+                        <i class="fas fa-font"></i> Capitalize Words
+                    </button>
+                    <button class="util-btn" data-action="reverse">
+                        <i class="fas fa-exchange-alt"></i> Reverse
+                    </button>
+                    <button class="util-btn" data-action="remove-spaces">
+                        <i class="fas fa-minus"></i> Remove Spaces
+                    </button>
+                    <button class="util-btn" data-action="trim">
+                        <i class="fas fa-cut"></i> Trim
+                    </button>
+                </div>
+                <div class="output-section">
+                    <div class="output-header">
+                        <label>Output</label>
+                        <button class="btn-icon" id="copyTransformOutput">
+                            <i class="fas fa-copy"></i> Copy
+                        </button>
+                    </div>
+                    <textarea id="transformOutput" rows="6" readonly></textarea>
+                </div>
+            </div>
+        </div>
+
+        <!-- Text Analyzer -->
+        <div class="tool-container" id="text-analyzer">
+            <div class="tool-header">
+                <h2><i class="fas fa-chart-line"></i> Advanced Text Analyzer</h2>
+                <button class="btn-primary" id="analyzeText">
+                    <i class="fas fa-magnifying-glass-chart"></i> Analyze
+                </button>
+            </div>
+            <div class="input-group">
+                <label>Input Text</label>
+                <textarea id="analyzerInput" rows="12" placeholder="Enter or paste text to analyze..."></textarea>
+            </div>
+            <div class="analyzer-results" id="analyzerResults">
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon"><i class="fas fa-file-lines"></i></div>
+                        <div class="stat-info">
+                            <div class="stat-label">Lines</div>
+                            <div class="stat-value" id="statLines">0</div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon"><i class="fas fa-font"></i></div>
+                        <div class="stat-info">
+                            <div class="stat-label">Words</div>
+                            <div class="stat-value" id="statWords">0</div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon"><i class="fas fa-keyboard"></i></div>
+                        <div class="stat-info">
+                            <div class="stat-label">Characters</div>
+                            <div class="stat-value" id="statChars">0</div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon"><i class="fas fa-space-shuttle"></i></div>
+                        <div class="stat-info">
+                            <div class="stat-label">Non-Whitespace</div>
+                            <div class="stat-value" id="statNonWhitespace">0</div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon"><i class="fas fa-copy"></i></div>
+                        <div class="stat-info">
+                            <div class="stat-label">Duplicate Lines</div>
+                            <div class="stat-value" id="statDuplicates">0</div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon"><i class="fas fa-paragraph"></i></div>
+                        <div class="stat-info">
+                            <div class="stat-label">Paragraphs</div>
+                            <div class="stat-value" id="statParagraphs">0</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="analysis-details">
+                    <div class="detail-section">
+                        <h3>Word Statistics</h3>
+                        <div class="detail-content" id="wordStats"></div>
+                    </div>
+                    <div class="detail-section">
+                        <h3>Most Frequent Words</h3>
+                        <div class="detail-content" id="frequencyStats"></div>
+                    </div>
+                    <div class="detail-section">
+                        <h3>Duplicate Lines</h3>
+                        <div class="detail-content" id="duplicateLines"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- File Comparator -->
+        <div class="tool-container" id="file-comparator">
+            <div class="tool-header">
+                <h2><i class="fas fa-file-code"></i> Advanced File Comparator</h2>
+            </div>
+            <div class="file-upload-area">
+                <div class="upload-panel" id="uploadPanelA">
+                    <div class="upload-zone" data-target="fileA">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                        <p>Drop File A here or click to browse</p>
+                        <input type="file" id="fileAInput" accept=".txt,.js,.py,.json,.css,.html,.xml,.md,.java,.cpp,.c,.ts,.jsx,.tsx">
+                        <div class="file-info" id="fileAInfo"></div>
+                    </div>
+                </div>
+                <div class="upload-panel" id="uploadPanelB">
+                    <div class="upload-zone" data-target="fileB">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                        <p>Drop File B here or click to browse</p>
+                        <input type="file" id="fileBInput" accept=".txt,.js,.py,.json,.css,.html,.xml,.md,.java,.cpp,.c,.ts,.jsx,.tsx">
+                        <div class="file-info" id="fileBInfo"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="compare-actions">
+                <button class="btn-primary" id="compareFiles" disabled>
+                    <i class="fas fa-code-compare"></i> Compare Files
+                </button>
+                <button class="btn-secondary" id="clearFiles">
+                    <i class="fas fa-trash"></i> Clear All
+                </button>
+            </div>
+            <div class="file-compare-result" id="fileCompareResult"></div>
+            <div class="file-summary" id="fileSummary"></div>
+        </div>
+
+        <!-- Color Picker Tool -->
+        <div class="tool-container" id="color-picker">
+            <div class="tool-header">
+                <h2><i class="fas fa-palette"></i> Advanced Color Picker</h2>
+            </div>
+            <div class="color-picker-layout">
+                <div class="color-input-section">
+                    <div class="color-preview" id="colorPreview"></div>
+                    <input type="color" id="colorInput" value="#3b82f6">
+                    <div class="color-values">
+                        <div class="color-value-item">
+                            <label>HEX</label>
+                            <div class="value-wrapper">
+                                <input type="text" id="hexValue" readonly>
+                                <button class="btn-icon" data-copy="hexValue"><i class="fas fa-copy"></i></button>
+                            </div>
+                        </div>
+                        <div class="color-value-item">
+                            <label>RGB</label>
+                            <div class="value-wrapper">
+                                <input type="text" id="rgbValue" readonly>
+                                <button class="btn-icon" data-copy="rgbValue"><i class="fas fa-copy"></i></button>
+                            </div>
+                        </div>
+                        <div class="color-value-item">
+                            <label>HSL</label>
+                            <div class="value-wrapper">
+                                <input type="text" id="hslValue" readonly>
+                                <button class="btn-icon" data-copy="hslValue"><i class="fas fa-copy"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="color-palettes">
+                    <h3>Color Shades</h3>
+                    <div class="shade-palette" id="shadePalette"></div>
+                    <h3>Complementary Colors</h3>
+                    <div class="complementary-palette" id="complementaryPalette"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- UUID Generator -->
+        <div class="tool-container" id="uuid-generator">
+            <div class="tool-header">
+                <h2><i class="fas fa-fingerprint"></i> UUID Generator</h2>
+            </div>
+            <div class="uuid-controls">
+                <div class="uuid-options">
+                    <label>Version:</label>
+                    <select id="uuidVersion">
+                        <option value="v4" selected>UUID v4 (Random)</option>
+                        <option value="v1">UUID v1 (Timestamp)</option>
+                    </select>
+                    <label>Quantity:</label>
+                    <input type="number" id="uuidQuantity" value="10" min="1" max="1000">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="uuidUppercase">
+                        <span>Uppercase</span>
+                    </label>
+                </div>
+                <button class="btn-primary" id="generateUUIDs">
+                    <i class="fas fa-rotate"></i> Generate UUIDs
+                </button>
+            </div>
+            <div class="uuid-output">
+                <div class="output-header">
+                    <span>Generated UUIDs</span>
+                    <button class="btn-icon" id="copyAllUUIDs">
+                        <i class="fas fa-copy"></i> Copy All
+                    </button>
+                </div>
+                <div class="uuid-list" id="uuidList"></div>
+            </div>
+        </div>
+
+        <!-- Timestamp Converter -->
+        <div class="tool-container" id="timestamp-converter">
+            <div class="tool-header">
+                <h2><i class="fas fa-clock"></i> Timestamp Converter</h2>
+            </div>
+            <div class="timestamp-layout">
+                <div class="current-time-card">
+                    <h3>Current Time</h3>
+                    <div class="current-timestamp" id="currentTimestamp"></div>
+                    <div class="current-date" id="currentDate"></div>
+                </div>
+                <div class="converter-section">
+                    <h3>Timestamp to Date</h3>
+                    <div class="input-group">
+                        <label>Unix Timestamp (seconds or milliseconds)</label>
+                        <input type="text" id="timestampInput" placeholder="1609459200">
+                        <button class="btn-primary" id="convertTimestamp">Convert</button>
+                    </div>
+                    <div class="conversion-result" id="timestampResult"></div>
+                </div>
+                <div class="converter-section">
+                    <h3>Date to Timestamp</h3>
+                    <div class="input-group">
+                        <label>Select Date & Time</label>
+                        <input type="datetime-local" id="dateInput">
+                        <button class="btn-primary" id="convertDate">Convert</button>
+                    </div>
+                    <div class="conversion-result" id="dateResult"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- JWT Decoder -->
+        <div class="tool-container" id="jwt-decoder">
+            <div class="tool-header">
+                <h2><i class="fas fa-key"></i> JWT Decoder & Validator</h2>
+            </div>
+            <div class="input-group">
+                <label>JWT Token</label>
+                <textarea id="jwtInput" rows="6" placeholder="Paste JWT token here..."></textarea>
+                <button class="btn-primary" id="decodeJWT">
+                    <i class="fas fa-unlock"></i> Decode JWT
+                </button>
+            </div>
+            <div class="jwt-output">
+                <div class="jwt-section">
+                    <h3>Header</h3>
+                    <pre id="jwtHeader"></pre>
+                </div>
+                <div class="jwt-section">
+                    <h3>Payload</h3>
+                    <pre id="jwtPayload"></pre>
+                </div>
+                <div class="jwt-section">
+                    <h3>Signature</h3>
+                    <pre id="jwtSignature"></pre>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Terminal Overlay -->
+    <div class="terminal-overlay" id="terminalOverlay">
+        <div class="terminal-header">
+            <span><i class="fas fa-terminal"></i> DevFusion Terminal</span>
+            <button class="terminal-close" id="terminalClose">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="terminal-body" id="terminalBody">
+            <div class="terminal-welcome">
+                <pre>
+██████╗ ███████╗██╗   ██╗███████╗██╗   ██╗███████╗██╗ ██████╗ ███╗   ██╗
+██╔══██╗██╔════╝██║   ██║██╔════╝██║   ██║██╔════╝██║██╔═══██╗████╗  ██║
+██║  ██║█████╗  ██║   ██║█████╗  ██║   ██║███████╗██║██║   ██║██╔██╗ ██║
+██║  ██║██╔══╝  ╚██╗ ██╔╝██╔══╝  ██║   ██║╚════██║██║██║   ██║██║╚██╗██║
+██████╔╝███████╗ ╚████╔╝ ██║     ╚██████╔╝███████║██║╚██████╔╝██║ ╚████║
+╚═════╝ ╚══════╝  ╚═══╝  ╚═╝      ╚═════╝ ╚══════╝╚═╝ ╚═════╝ ╚═╝  ╚═══╝
+                                                                          
+Welcome to DevFusion Terminal v2.1.0
+Type 'help' for available commands or 'exit' to close.
+                </pre>
+            </div>
+            <div class="terminal-output" id="terminalOutput"></div>
+        </div>
+        <div class="terminal-input-line">
+            <span class="terminal-prompt">devfusion@toolkit:~$</span>
+            <input type="text" id="terminalInput" class="terminal-input" autocomplete="off" spellcheck="false">
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div class="toast" id="toast"></div>
+
+    <!-- JS Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/codemirror.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/javascript/javascript.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/diff_match_patch/20121119/diff_match_patch.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jsoneditor/9.10.0/jsoneditor.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/uuid/8.3.2/uuid.min.js"></script>
+    
+    <!-- Custom Scripts -->
+    <script src="js/utils.js"></script>
+    <script src="js/diff-viewer.js"></script>
+    <script src="js/json-tools.js"></script>
+    <script src="js/regex-tester.js"></script>
+    <script src="js/string-utils.js"></script>
+    <script src="js/text-analyzer.js"></script>
+    <script src="js/file-comparator.js"></script>
+    <script src="js/color-picker.js"></script>
+    <script src="js/uuid-generator.js"></script>
+    <script src="js/timestamp-converter.js"></script>
+    <script src="js/jwt-decoder.js"></script>
+    <script src="js/terminal.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>
